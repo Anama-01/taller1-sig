@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Anamaria Rodriguez Ramirez">
+<meta name="dcterms.date" content="2026-03-11">
+
+<title>Benchmark: Evaluación Comparativa de Procesamiento Geoespacial</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="respuestasBenchmark_files/libs/clipboard/clipboard.min.js"></script>
+<script src="respuestasBenchmark_files/libs/quarto-html/quarto.js"></script>
+<script src="respuestasBenchmark_files/libs/quarto-html/popper.min.js"></script>
+<script src="respuestasBenchmark_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="respuestasBenchmark_files/libs/quarto-html/anchor.min.js"></script>
+<link href="respuestasBenchmark_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="respuestasBenchmark_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="respuestasBenchmark_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="respuestasBenchmark_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="respuestasBenchmark_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="respuestasBenchmark_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="respuestasBenchmark_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción"><span class="header-section-number">1</span> Introducción</a></li>
+  <li><a href="#ejecución-de-códigos" id="toc-ejecución-de-códigos" class="nav-link" data-scroll-target="#ejecución-de-códigos"><span class="header-section-number">2</span> Ejecución de Códigos</a>
+  <ul class="collapse">
+  <li><a href="#parte-a---ejecución-en-jupyter-notebooks" id="toc-parte-a---ejecución-en-jupyter-notebooks" class="nav-link" data-scroll-target="#parte-a---ejecución-en-jupyter-notebooks"><span class="header-section-number">2.1</span> Parte A - Ejecución en Jupyter (notebooks)</a></li>
+  <li><a href="#parte-b-ejecución-desde-vscode-terminal-integrada" id="toc-parte-b-ejecución-desde-vscode-terminal-integrada" class="nav-link" data-scroll-target="#parte-b-ejecución-desde-vscode-terminal-integrada"><span class="header-section-number">2.2</span> Parte B — Ejecución desde VSCode (terminal integrada)</a></li>
+  <li><a href="#parte-c-ejecución-desde-el-termina-de-windows-powershell" id="toc-parte-c-ejecución-desde-el-termina-de-windows-powershell" class="nav-link" data-scroll-target="#parte-c-ejecución-desde-el-termina-de-windows-powershell"><span class="header-section-number">2.3</span> Parte C — Ejecución desde el Termina de Windows (PowerShell)</a></li>
+  </ul></li>
+  <li><a href="#preguntas-de-análisis" id="toc-preguntas-de-análisis" class="nav-link" data-scroll-target="#preguntas-de-análisis"><span class="header-section-number">3</span> Preguntas de análisis</a>
+  <ul class="collapse">
+  <li><a href="#entorno-de-ejecución" id="toc-entorno-de-ejecución" class="nav-link" data-scroll-target="#entorno-de-ejecución"><span class="header-section-number">3.1</span> Entorno de ejecución</a></li>
+  <li><a href="#abstracción-de-la-práctica" id="toc-abstracción-de-la-práctica" class="nav-link" data-scroll-target="#abstracción-de-la-práctica"><span class="header-section-number">3.2</span> Abstracción de la práctica</a></li>
+  <li><a href="#julia-y-el-costo-de-compilación-warm-up" id="toc-julia-y-el-costo-de-compilación-warm-up" class="nav-link" data-scroll-target="#julia-y-el-costo-de-compilación-warm-up"><span class="header-section-number">3.3</span> Julia y el costo de compilación (Warm-up)</a></li>
+  <li><a href="#elección-informada" id="toc-elección-informada" class="nav-link" data-scroll-target="#elección-informada"><span class="header-section-number">3.4</span> Elección informada</a></li>
+  </ul></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias"><span class="header-section-number">4</span> Referencias</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="respuestasBenchmark.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Benchmark: Evaluación Comparativa de Procesamiento Geoespacial</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Anamaria Rodriguez Ramirez </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 11, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introducción" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introducción"><span class="header-section-number">1</span> Introducción</h2>
+<p>El Benchmark, es una prueba de estandarización, que permite comparar el rendimiento del sistema, al realizar la ejecución de una misma tarea en distintos lenguajes de programación, en este caso en Python, R y Julia. El objetivo es realizar una operación aritmética a una única banda de raster (Banda 4 - Absorción de clorofila 665nm), para entender cuál es el costo computacional de cada lenguaje, y así poder tomar decisiones informadas sobre cuál utilizar en función de las necesidades del proyecto.</p>
+</section>
+<section id="ejecución-de-códigos" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="ejecución-de-códigos"><span class="header-section-number">2</span> Ejecución de Códigos</h2>
+<section id="parte-a---ejecución-en-jupyter-notebooks" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="parte-a---ejecución-en-jupyter-notebooks"><span class="header-section-number">2.1</span> Parte A - Ejecución en Jupyter (notebooks)</h3>
+<p>La ejecución de los scripts se realizó en un entorno de Jupyter Notebook, utilizando las bibliotecas específicas para cada lenguaje: <code>rasterio</code> para Python, <code>terra</code> y <code>stars</code> para R, y <code>Raster.jl</code> para Julia. Cada script fue diseñado para realizar la misma operación aritmética sobre la banda seleccionada del raster, asegurando que las condiciones de prueba fueran equivalentes.</p>
+<p>Se observó que een Notebooks, el lenguaje con menor tiempo fue el de Python con la libreria <code>rasterio</code>, con un tiempo de 12.952 seg, seguida de la librería Terra y Starrs de R, para finalmente terminar con el lenguaje de Julia, con un tiempo de 56.159 seg. Lo anterior se observerva mejor en la siguiente gráfica</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Código en R</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Resultados de los lenguajes</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>t_python <span class="ot">&lt;-</span> <span class="fl">12.952</span> <span class="co">#seg</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>t_julia <span class="ot">&lt;-</span> <span class="fl">56.159</span> <span class="co">#seg</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>t_terra <span class="ot">&lt;-</span> <span class="fl">25.119</span> <span class="co">#seg</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>t_stars <span class="ot">&lt;-</span> <span class="fl">39.412</span> <span class="co">#seg </span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos el dataframe con los datos capturados</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>resultados <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Motor =</span> <span class="fu">c</span>(<span class="st">"R: terra"</span>, <span class="st">"R: stars"</span>, <span class="st">"Python: rasterio"</span>, <span class="st">"Julia: Rasters.jl"</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lenguaje =</span> <span class="fu">c</span>(<span class="st">"R (C++)"</span>, <span class="st">"R"</span>, <span class="st">"Python (C++/NumPy)"</span>, <span class="st">"Julia (Nativo)"</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Paralelismo =</span> <span class="fu">c</span>(<span class="st">"Monohilo"</span>, <span class="st">"Monohilo"</span>, <span class="st">"SIMD (Vectorizado)"</span>, <span class="st">"Multihilo (12 hilos)"</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tiempo_Seg =</span> <span class="fu">c</span>(t_terra, t_stars, t_python, t_julia)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>resultados</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              Motor           Lenguaje          Paralelismo Tiempo_Seg
+1          R: terra            R (C++)             Monohilo     25.119
+2          R: stars                  R             Monohilo     39.412
+3  Python: rasterio Python (C++/NumPy)   SIMD (Vectorizado)     12.952
+4 Julia: Rasters.jl     Julia (Nativo) Multihilo (12 hilos)     56.159</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cálculo de eficiencia: ¿Cuántas veces es más rápido que el más lento?</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="ot">&lt;-</span> <span class="fu">max</span>(resultados<span class="sc">$</span>Tiempo_Seg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>resultados<span class="sc">$</span>X_mas_rapido <span class="ot">&lt;-</span> <span class="fu">round</span>(max_t <span class="sc">/</span> resultados<span class="sc">$</span>Tiempo_Seg, <span class="dv">2</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Formateo elegante para el HTML</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(resultados, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Duelo de Titanes: Procesamiento de 1GB Sentinel-2 en JupyterLab Notebooks"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Motor"</span>, <span class="st">"Lenguaje"</span>, <span class="st">"Paralelismo"</span>, <span class="st">"Tiempo (s)"</span>, <span class="st">"Eficiencia (X)"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>), </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="fu">which.min</span>(resultados<span class="sc">$</span>Tiempo_Seg), <span class="at">bold =</span> T, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">background =</span> <span class="st">"#2c3e50"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<caption>Duelo de Titanes: Procesamiento de 1GB Sentinel-2 en JupyterLab Notebooks</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Motor</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Lenguaje</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Paralelismo</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Tiempo (s)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Eficiencia (X)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">R: terra</td>
+<td style="text-align: left;">R (C++)</td>
+<td style="text-align: left;">Monohilo</td>
+<td style="text-align: right;">25.119</td>
+<td style="text-align: right;">2.24</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R: stars</td>
+<td style="text-align: left;">R</td>
+<td style="text-align: left;">Monohilo</td>
+<td style="text-align: right;">39.412</td>
+<td style="text-align: right;">1.42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">Python: rasterio</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">Python (C++/NumPy)</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">SIMD (Vectorizado)</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">12.952</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">4.34</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Julia: Rasters.jl</td>
+<td style="text-align: left;">Julia (Nativo)</td>
+<td style="text-align: left;">Multihilo (12 hilos)</td>
+<td style="text-align: right;">56.159</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+<p>Asímismo, se observó con respecto a la generación de imagenes que el único lenguaje que presento problemas desde el Jupyter lab fue Julia, el cual no pudo generar la imagen, mientras que tanto Python como R si pudieron generar la imagen sin problemas.</p>
+<p>En las siguientes imágenes se pueden observar los resultados en la interfaz del JupyterLab:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="jystart.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<figcaption>Cálculo aritmético de Banda 4 por un escalar en Lenguaje R con libreria start</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="jyterra.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<figcaption>Cálculo aritmético de Banda 4 por un escalar en Lenguaje R con libreria terra</figcaption>
+</figure>
+</div>
+</section>
+<section id="parte-b-ejecución-desde-vscode-terminal-integrada" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="parte-b-ejecución-desde-vscode-terminal-integrada"><span class="header-section-number">2.2</span> Parte B — Ejecución desde VSCode (terminal integrada)</h3>
+<p>Para VSCode, se crearon además de los archivos soliticitados, uno para la creación del Path y otro con los resultados resumidos. Para este, se obtuvieron los siguientes resultados:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Resultados de los lenguajes</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Resultados de los lenguajes</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>t_python <span class="ot">&lt;-</span> <span class="fl">15.439</span> <span class="co">#seg</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>t_julia <span class="ot">&lt;-</span> <span class="fl">56.585</span> <span class="co">#seg</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>t_terra <span class="ot">&lt;-</span> <span class="fl">57.364</span> <span class="co">#seg</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>t_stars <span class="ot">&lt;-</span> <span class="fl">1.438</span> <span class="co">#seg </span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos el dataframe con los datos capturados</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>resultados <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Motor =</span> <span class="fu">c</span>(<span class="st">"R: terra"</span>, <span class="st">"R: stars"</span>, <span class="st">"Python: rasterio"</span>, <span class="st">"Julia: Rasters.jl"</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lenguaje =</span> <span class="fu">c</span>(<span class="st">"R (C++)"</span>, <span class="st">"R"</span>, <span class="st">"Python (C++/NumPy)"</span>, <span class="st">"Julia (Nativo)"</span>),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Paralelismo =</span> <span class="fu">c</span>(<span class="st">"Monohilo"</span>, <span class="st">"Monohilo"</span>, <span class="st">"SIMD (Vectorizado)"</span>, <span class="st">"Multihilo (12 hilos)"</span>),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tiempo_Seg =</span> <span class="fu">c</span>(t_terra, t_stars, t_python, t_julia)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>resultados</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              Motor           Lenguaje          Paralelismo Tiempo_Seg
+1          R: terra            R (C++)             Monohilo     57.364
+2          R: stars                  R             Monohilo      1.438
+3  Python: rasterio Python (C++/NumPy)   SIMD (Vectorizado)     15.439
+4 Julia: Rasters.jl     Julia (Nativo) Multihilo (12 hilos)     56.585</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cálculo de eficiencia: ¿Cuántas veces es más rápido que el más lento?</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="ot">&lt;-</span> <span class="fu">max</span>(resultados<span class="sc">$</span>Tiempo_Seg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>resultados<span class="sc">$</span>X_mas_rapido <span class="ot">&lt;-</span> <span class="fu">round</span>(max_t <span class="sc">/</span> resultados<span class="sc">$</span>Tiempo_Seg, <span class="dv">2</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Formateo elegante para el HTML</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(resultados, </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Duelo de Titanes: Procesamiento de 1GB Sentinel-2 en Visual Studio Code"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Motor"</span>, <span class="st">"Lenguaje"</span>, <span class="st">"Paralelismo"</span>, <span class="st">"Tiempo (s)"</span>, <span class="st">"Eficiencia (X)"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>), </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="fu">which.min</span>(resultados<span class="sc">$</span>Tiempo_Seg), <span class="at">bold =</span> T, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">background =</span> <span class="st">"#2c3e50"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<caption>Duelo de Titanes: Procesamiento de 1GB Sentinel-2 en Visual Studio Code</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Motor</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Lenguaje</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Paralelismo</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Tiempo (s)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Eficiencia (X)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">R: terra</td>
+<td style="text-align: left;">R (C++)</td>
+<td style="text-align: left;">Monohilo</td>
+<td style="text-align: right;">57.364</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">R: stars</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">R</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">Monohilo</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">1.438</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">39.89</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Python: rasterio</td>
+<td style="text-align: left;">Python (C++/NumPy)</td>
+<td style="text-align: left;">SIMD (Vectorizado)</td>
+<td style="text-align: right;">15.439</td>
+<td style="text-align: right;">3.72</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Julia: Rasters.jl</td>
+<td style="text-align: left;">Julia (Nativo)</td>
+<td style="text-align: left;">Multihilo (12 hilos)</td>
+<td style="text-align: right;">56.585</td>
+<td style="text-align: right;">1.01</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+<p>Observandose qué en ejecución el más rápido fue el lenguaje de R con la librería Stars, seguido de Python con Rasterio, luego R con Terra y finalmente Julia con Rasters.jl.</p>
+<p>La imagen generada por el lenguaje de Julia, que no pudo ser visualizada en JupyterLab, fue la siguiente:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="julia_plot.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<figcaption>Cálculo aritmético de Banda 4 por un escalar</figcaption>
+</figure>
+</div>
+<p>Asímismo, la ejecución de códigos en VSCode se vió de la siguiente forma:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="VSC_start.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<figcaption>Cálculo aritmético de Banda 4 por un escalar en Lenguaje R con libreria start</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="VSC_terra.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<figcaption>Cálculo aritmético de Banda 4 por un escalar en Lenguaje R con libreria terra</figcaption>
+</figure>
+</div>
+</section>
+<section id="parte-c-ejecución-desde-el-termina-de-windows-powershell" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="parte-c-ejecución-desde-el-termina-de-windows-powershell"><span class="header-section-number">2.3</span> Parte C — Ejecución desde el Termina de Windows (PowerShell)</h3>
+<p>A diferencia de VSCode y los Notebooks, no se puede realizar visualización de las imágenes, sin embargo para obtener cálculos y el valor de los tiempos, la terminal es mucho más eficiento, dado que el mayor tiempo fue el empleado por Terra de R, con 45.412. Los valores obtenidos se ven en la siguiente tabla:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Resultados de los lenguajes</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Resultados de los lenguajes</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>t_python <span class="ot">&lt;-</span> <span class="fl">7.929</span> <span class="co">#seg</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>t_julia <span class="ot">&lt;-</span> <span class="fl">25.566</span> <span class="co">#seg</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>t_terra <span class="ot">&lt;-</span> <span class="fl">45.412</span> <span class="co">#seg</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>t_stars <span class="ot">&lt;-</span> <span class="fl">31.207</span> <span class="co">#seg </span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos el dataframe con los datos capturados</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>resultados <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Motor =</span> <span class="fu">c</span>(<span class="st">"R: terra"</span>, <span class="st">"R: stars"</span>, <span class="st">"Python: rasterio"</span>, <span class="st">"Julia: Rasters.jl"</span>),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lenguaje =</span> <span class="fu">c</span>(<span class="st">"R (C++)"</span>, <span class="st">"R"</span>, <span class="st">"Python (C++/NumPy)"</span>, <span class="st">"Julia (Nativo)"</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Paralelismo =</span> <span class="fu">c</span>(<span class="st">"Monohilo"</span>, <span class="st">"Monohilo"</span>, <span class="st">"SIMD (Vectorizado)"</span>, <span class="st">"Multihilo (12 hilos)"</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Tiempo_Seg =</span> <span class="fu">c</span>(t_terra, t_stars, t_python, t_julia)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>resultados</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              Motor           Lenguaje          Paralelismo Tiempo_Seg
+1          R: terra            R (C++)             Monohilo     45.412
+2          R: stars                  R             Monohilo     31.207
+3  Python: rasterio Python (C++/NumPy)   SIMD (Vectorizado)      7.929
+4 Julia: Rasters.jl     Julia (Nativo) Multihilo (12 hilos)     25.566</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cálculo de eficiencia: ¿Cuántas veces es más rápido que el más lento?</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="ot">&lt;-</span> <span class="fu">max</span>(resultados<span class="sc">$</span>Tiempo_Seg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>resultados<span class="sc">$</span>X_mas_rapido <span class="ot">&lt;-</span> <span class="fu">round</span>(max_t <span class="sc">/</span> resultados<span class="sc">$</span>Tiempo_Seg, <span class="dv">2</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Formateo elegante para el HTML</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(resultados, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Duelo de Titanes: Procesamiento de 1GB Sentinel-2 en la Terminal"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Motor"</span>, <span class="st">"Lenguaje"</span>, <span class="st">"Paralelismo"</span>, <span class="st">"Tiempo (s)"</span>, <span class="st">"Eficiencia (X)"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>), </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="fu">which.min</span>(resultados<span class="sc">$</span>Tiempo_Seg), <span class="at">bold =</span> T, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">background =</span> <span class="st">"#2c3e50"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<caption>Duelo de Titanes: Procesamiento de 1GB Sentinel-2 en la Terminal</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Motor</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Lenguaje</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Paralelismo</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Tiempo (s)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Eficiencia (X)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">R: terra</td>
+<td style="text-align: left;">R (C++)</td>
+<td style="text-align: left;">Monohilo</td>
+<td style="text-align: right;">45.412</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R: stars</td>
+<td style="text-align: left;">R</td>
+<td style="text-align: left;">Monohilo</td>
+<td style="text-align: right;">31.207</td>
+<td style="text-align: right;">1.46</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">Python: rasterio</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">Python (C++/NumPy)</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">SIMD (Vectorizado)</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">7.929</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(44, 62, 80, 255) !important;">5.73</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Julia: Rasters.jl</td>
+<td style="text-align: left;">Julia (Nativo)</td>
+<td style="text-align: left;">Multihilo (12 hilos)</td>
+<td style="text-align: right;">25.566</td>
+<td style="text-align: right;">1.78</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+<p>En general, se observa que el lenguaje de Python con Rasterio es el más eficiente en términos de tiempo de ejecución, aplicado desde la terminal y JupyterLab. Mientras que el lenguaje de R con la librería Stars es el más eficiente en términos de tiempo de ejecución, aplicado desde Visual Studio Code. Por otro lado, el lenguaje de Julia con Rasters.jl es el menos eficiente en términos de tiempo de ejecución, aplicado desde JupyterLab y Visual Studio Code. Sin embargo, es importante destacar que los resultados pueden variar dependiendo del entorno de ejecución y la configuración del sistema.</p>
+<p>La ejecución del código se visualizó en la terminal de la siguiente forma:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Py.R.J.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<figcaption>Cálculo aritmético de Banda 4 por un escalar en Lenguaje R, Python y Julia</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Terra.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<figcaption>Cálculo aritmético de Banda 4 por un escalar en Lenguaje R con libreria terra en la Terminal</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="preguntas-de-análisis" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="preguntas-de-análisis"><span class="header-section-number">3</span> Preguntas de análisis</h2>
+<section id="entorno-de-ejecución" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="entorno-de-ejecución"><span class="header-section-number">3.1</span> Entorno de ejecución</h3>
+<p>Las principales diferencias en los tiempos de ejecución entre los entornos dependen del flujo de trbajo, no solo del lenguaje de programación empleado, sino también el entorno sobre el cuál se ejecuta.</p>
+<p>Para el caso de la terminal, es el entorno más siliar al sistema operativo, por lo que no requiere de compilación kernels interactivos ni interfases, generando que el flujo de trabajo sea más directo, lo que se traduce en tiempos de ejecución más cortos.</p>
+<p>En cuanto al JupyterLab, necesita además de compilarse, generar comunicación con el navegador, generando un aumento en los tiempos. Finalmente, para Visual Studio Code, aunque es un entorno de desarrollo integrado, también requiere de una comunicación con el sistema operativo y la generación de una interfaz gráfica, lo que puede generar tiempos de ejecución más largos en comparación con la terminal.</p>
+</section>
+<section id="abstracción-de-la-práctica" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="abstracción-de-la-práctica"><span class="header-section-number">3.2</span> Abstracción de la práctica</h3>
+<p>El costo de las abtracciones es más visible en la libreria de <code>stars</code> (R), debido a la manera en la que funciona la libreria, al estar diseñada para datos espaciales multidimensionales, requiere de varias capas, generando un mayor costo administrativo. No trabaja con datos menos complejos como las matrices en <code>terra</code>, sino que trabaja con objetos más complejos (cmo bandas, tiempos, variables), lo que puede generar un mayor costo computacional, por lo que presenta tiempos mayores de ejecución con respecto las otras liberias. En contraste, motores como terra o rasterio trabajan más cerca de bibliotecas optimizadas en C/C++ o NumPy, reduciendo el impacto de dichas capas intermedias.</p>
+</section>
+<section id="julia-y-el-costo-de-compilación-warm-up" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="julia-y-el-costo-de-compilación-warm-up"><span class="header-section-number">3.3</span> Julia y el costo de compilación (Warm-up)</h3>
+<p><strong>¿El efecto del warm-up de Julia se notó más en algún entorno específico?</strong> - Expliquen brevemente por qué</p>
+<p>Entendiendo el efecto del <strong>warm-up</strong>, como el tiempo adicional para compilación de funciones en su primera ejecución, debido al modelo de compilación que maneja el lenguaje Julia, donde evalua al final, se muestran tiempos muy altos en los entornos de JupyterLab y VSCode, en comparación con la terminal, donde el tiempo fue de 25s. ESto se debe a los procesos de kernel y compilación que se generan en los entornos de JupyterLab y VSCode, lo que puede aumentar significativamente el tiempo de ejecución inicial, mientras que en la terminal, el proceso es más directo y no requiere de la misma cantidad de recursos para la compilación, resultando en tiempos de ejecución más cortos.</p>
+</section>
+<section id="elección-informada" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="elección-informada"><span class="header-section-number">3.4</span> Elección informada</h3>
+<p>Dependiendo del tipo de proceso que requiera realizar, si elegiría el entorno de ejecución y asímismo el lenguaje. Para cálculos rápidos a menores tiempos, elegiría a Python por su velocidad en resultados y rapidez de ejecución, además de su capacidad de flujos de datos y automatización siendo este un factor clave para la toma de decisiones rápidas.</p>
+<p>El anterior ejercicio fue realizado gracias a la guía de la clase de Rodríguez-Avellaneda (2026), de los apartados <strong>Benchmark geoespacial: cómo leer los resultados</strong> y <strong>Evaluación Comparativa de Procesamiento Geoespacial</strong>, además de los resultados obtenidos en la ejecución de los códigos en los diferentes entornos.</p>
+</section>
+</section>
+<section id="referencias" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="referencias"><span class="header-section-number">4</span> Referencias</h2>
+<p>Rodríguez-Avellaneda, A. H. (2026). Programación en SIG: R, Python y Julia [Material de curso]. Maestría en Geomática, Universidad Nacional de Colombia. Recuperado de https://github.com/alexyshr/ProgramacionSIG2026</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
